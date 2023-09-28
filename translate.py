@@ -1,99 +1,133 @@
+# Import necessary libraries
 from encodings.utf_8_sig import encode
+from queue import Empty
 from googletrans import Translator
 import time
 import math
 
-LANGUAGES = {'af': 'afrikaans', 'sq': 'albanian', 'am': 'amharic', 'ar': 'arabic', 'hy': 'armenian', 'az': 'azerbaijani', 'eu': 
-'basque', 'be': 'belarusian', 'bn': 'bengali', 'bs': 'bosnian', 'bg': 'bulgarian', 'ca': 'catalan', 'ceb': 'cebuano', 'ny': 'chichewa', 
-'zh-cn': 'chinese (simplified)', 'zh-tw': 'chinese (traditional)', 'co': 'corsican', 'hr': 'croatian', 'cs': 'czech', 'da': 'danish', 
-'nl': 'dutch', 'en': 'english', 'eo': 'esperanto', 'et': 'estonian', 'tl': 'filipino', 'fi': 'finnish', 'fr': 'french', 'fy': 'frisian', 
-'gl': 'galician', 'ka': 'georgian', 'de': 'german', 'el': 'greek', 'gu': 'gujarati', 'ht': 'haitian creole', 'ha': 'hausa', 'haw': 'hawaiian',
-'iw': 'hebrew', 'he': 'hebrew', 'hi': 'hindi', 'hmn': 'hmong', 'hu': 'hungarian', 'is': 'icelandic', 'ig': 'igbo', 'id': 
-'indonesian', 'ga': 'irish', 'it': 'italian', 'ja': 'japanese', 'jw': 'javanese', 'kn': 'kannada', 'kk': 'kazakh', 'km': 'khmer', 
-'ko': 'korean', 'ku': 'kurdish (kurmanji)', 'ky': 'kyrgyz', 'lo': 'lao', 'la': 'latin', 'lv': 'latvian', 'lt': 'lithuanian', 'lb': 'luxembourgish', 
-'mk': 'macedonian', 'mg': 'malagasy', 'ms': 'malay', 'ml': 'malayalam', 'mt': 'maltese', 'mi': 'maori', 'mr': 'marathi', 'mn': 'mongolian', 
-'my': 'myanmar (burmese)', 'ne': 'nepali', 'no': 'norwegian', 'or': 'odia', 'ps': 'pashto', 'fa': 'persian', 'pl': 'polish', 'pt': 
-'portuguese', 'pa': 'punjabi', 'ro': 'romanian', 'ru': 'russian', 'sm': 'samoan', 'gd': 'scots gaelic', 'sr': 'serbian', 'st': 'sesotho', 
-'sn': 'shona', 'sd': 'sindhi', 'si': 'sinhala', 'sk': 'slovak', 'sl': 'slovenian', 'so': 'somali', 'es': 'spanish', 'su': 'sundanese', 
-'sw': 'swahili', 'sv': 'swedish', 'tg': 'tajik', 'ta': 'tamil', 'te': 'telugu', 'th': 'thai', 'tr': 'turkish', 
-'uk': 'ukrainian', 'ur': 'urdu', 'ug': 'uyghur', 'uz': 'uzbek', 'vi': 'vietnamese', 'cy': 'welsh', 'xh': 'xhosa', 'yi': 'yiddish', 'yo': 
-'yoruba', 'zu': 'zulu'}
+# Define a dictionary of languages
+LANGUAGES = {
+    'af': 'afrikaans', 'sq': 'albanian', 'am': 'amharic', 'ar': 'arabic', 'hy': 'armenian', 'az': 'azerbaijani', 'eu': 'basque',
+    'be': 'belarusian', 'bn': 'bengali', 'bs': 'bosnian', 'bg': 'bulgarian', 'ca': 'catalan', 'ceb': 'cebuano', 'ny': 'chichewa',
+    'zh-cn': 'chinese (simplified)', 'zh-tw': 'chinese (traditional)', 'co': 'corsican', 'hr': 'croatian', 'cs': 'czech', 'da': 'danish',
+    'nl': 'dutch', 'en': 'english', 'eo': 'esperanto', 'et': 'estonian', 'tl': 'filipino', 'fi': 'finnish', 'fr': 'french', 'fy': 'frisian',
+    'gl': 'galician', 'ka': 'georgian', 'de': 'german', 'el': 'greek', 'gu': 'gujarati', 'ht': 'haitian creole', 'ha': 'hausa', 'haw': 'hawaiian',
+    'iw': 'hebrew', 'he': 'hebrew', 'hi': 'hindi', 'hmn': 'hmong', 'hu': 'hungarian', 'is': 'icelandic', 'ig': 'igbo', 'id': 'indonesian',
+    'ga': 'irish', 'it': 'italian', 'ja': 'japanese', 'jw': 'javanese', 'kn': 'kannada', 'kk': 'kazakh', 'km': 'khmer',
+    'ko': 'korean', 'ku': 'kurdish (kurmanji)', 'ky': 'kyrgyz', 'lo': 'lao', 'la': 'latin', 'lv': 'latvian', 'lt': 'lithuanian', 'lb': 'luxembourgish',
+    'mk': 'macedonian', 'mg': 'malagasy', 'ms': 'malay', 'ml': 'malayalam', 'mt': 'maltese', 'mi': 'maori', 'mr': 'marathi', 'mn': 'mongolian',
+    'my': 'myanmar (burmese)', 'ne': 'nepali', 'no': 'norwegian', 'or': 'odia', 'ps': 'pashto', 'fa': 'persian', 'pl': 'polish', 'pt':
+    'portuguese', 'pa': 'punjabi', 'ro': 'romanian', 'ru': 'russian', 'sm': 'samoan', 'gd': 'scots gaelic', 'sr': 'serbian', 'st': 'sesotho',
+    'sn': 'shona', 'sd': 'sindhi', 'si': 'sinhala', 'sk': 'slovak', 'sl': 'slovenian', 'so': 'somali', 'es': 'spanish', 'su': 'sundanese',
+    'sw': 'swahili', 'sv': 'swedish', 'tg': 'tajik', 'ta': 'tamil', 'te': 'telugu', 'th': 'thai', 'tr': 'turkish',
+    'uk': 'ukrainian', 'ur': 'urdu', 'ug': 'uyghur', 'uz': 'uzbek', 'vi': 'vietnamese', 'cy': 'welsh', 'xh': 'xhosa', 'yi': 'yiddish', 'yo':
+    'yoruba', 'zu': 'zulu'
+}
 
-
+# Function to translate text from one language to another
 def translator(text, fromLang, toLang):
-
     translator = Translator()
+    return translator.translate(text, src=fromLang, dest=toLang).text
 
-    return translator.translate(text, src=fromLang, dest=toLang ).text
-
+# Function to read the content of a file
 def readFile(fileName):
+    if not fileName.endswith(".txt"):
+        fileName += ".txt"
     try:
         with open(fileName) as opfr:
             content = opfr.readlines()
     finally:
         opfr.close()
-    
-    return content          
+    return content
 
-def display(fileName, fromLang, toLang):
-    
-    text = readFile(fileName)    
-    print(text[0])
-    print(text[1])
-
-    for i in range(2,len(text)):
-
-        print([i],". ",text[i])
-        print("                             ",translator(text[i], fromLang, toLang))
-        print("\n")
-
-def writeFile(fileName, fromLang, toLang):
-
+# Function to write translations to a file
+def writeFile(fileName: str, fromLang: str, toLang1: str, toLang2: str) -> None:
     start = time.time()
+    opfw = None
 
     try:
-        opfw = open(LANGUAGES[fromLang].capitalize+" vocabularies translated to french & "+LANGUAGES[toLang].capitalize+".txt", "w")
+        # Open a file for writing translations
+        opfw = open(LANGUAGES[fromLang].capitalize() + " vocabularies translated to " + LANGUAGES[toLang1].capitalize() + ".txt", "w")
         text = readFile(fileName)
-        
-        print(text[0], end='      ', file = opfw)
-        print(text[1],"(translated in", LANGUAGES[toLang] ,")", end='      ', file = opfw)
+
+        # Calculate the maximum English word length
+        max_english_length = max(len(text[i].split()[0]) for i in range(2, len(text)))
+
+        # Define widths for columns
+        col1_width = max_english_length + 5
+        col2_width = 25  # Adjust the width 
+        col3_width = 25  # Adjust the width 
+
+        # Write headers to the output file
+        print(text[0].ljust(col1_width), text[1].ljust(col2_width), "(All these words are translated in", LANGUAGES[toLang1], ")".ljust(col3_width), file=opfw)
         print("\n", file=opfw)
 
-        if(toLang == 'fa'):
-            for i in range(2,len(text)): 
-                str = "" 
-                for word in text[i].split():
-                    if "." not in word:
-                        str += word + " "
-                    else:
-                        break 
+        # Translate and write each word and its translation
+        for i in range(2, len(text)):
+            words = text[i].split()
+            english_word = " ".join(words[:-1])
+            translation1 = translator(words[0], fromLang, toLang1)
+            padding1 = " " * (max_english_length - len(english_word) + 20)  # Adjust padding
 
-                print([i-1],". ",text[i], end='      ', file = opfw)
-                print("        ",translator(str, fromLang, toLang),    "                      ",file = opfw)
-                print("                      ",translator(str, fromLang, "de"),file = opfw)
-                print("\n", file=opfw)       
-        else:
-            for i in range(2,len(text)): 
-                           
-                print([i-1],". ",text[i], end='      ', file = opfw)
-                print("        ",translator(text[i], fromLang, toLang),"                      ",translator(text[i], fromLang, "de"),file = opfw)
-                print("        ",translator(text[i], fromLang, "de"),file = opfw)
-                print("\n", file=opfw)
-            
+            # Check if toLang2 is not empty before assigning padding2
+            if toLang2 != "":
+                translation2 = translator(words[0], fromLang, toLang2)
+                padding2 = " " * (len(translation1) + 5)  # Adjust padding
+            else:
+                translation2 = ""  # Initialize translation2 as an empty string
+                padding2 = ""  # Initialize padding2 as an empty string
+            print(f"[{i-1}] .  {english_word} {padding1} {translation1} {padding2} {translation2} ",file=opfw)
+            print("\n", file=opfw)
+
     finally:
-        opfw.close()
-    # record end time
+        if opfw:
+            opfw.close()
+
+    # Record end time
     end = time.time()
-    tmp = ((end-start)/60)
+    tmp = ((end - start) / 60)
     sec, minute = math.modf(tmp)
-    print("The excution time is",minute,'m  :',"{:.2f}".format(sec*10), 's ')       
+    print("The execution time is", minute, 'm  :', "{:.2f}".format(sec * 10), 's ')
+
+# Main program
+dic = """
+               __             __
+    ________  |__|       __  |__|
+    \______ \  __  _____|  |_ __  ____   ____ _____ _______ __ __
+     |    |  \|  |/ ___\   __\  |/  _ \ /    \\__  \\_  __ <  |  |
+     |    `   \  \  \___|  | |  (  <_> )   |  \/ __ \|  | \/\__  |
+    /_________/__|\_____>__| |__|\____/|___|__(______/__|      / |
+                                                            __/  |
+                                                            \    |
+                                                             \_ /
+"""
+
+print(dic)
 
 
-fileName = input("Enter the file name to read : \n")
-fromLang = input("Source language : ") 
-toLang = input("Target language : ")
+POuria = """
+ *******    *******                  **             **   **             **                           **                   
+/**////**  **/////**                //             /**  **             /**                          ///                    
+/**   /** **     //** **   ** ****** **  ******    /** **    ******   ******  ******  **   ** ****** **  ******   ******* 
+/******* /**      /**/**  /**//**//*/** //////**   /****    //////** ///**/  **////**/**  /**////** /** //////** //**///**
+/**////  /**      /**/**  /** /** / /**  *******   /**/**    *******   /**  /**   /**/**  /**   **  /**  *******  /**  /**
+/**      //**     ** /**  /** /**   /** **////**   /**//**  **////**   /**  /**   /**/**  /**  **   /** **////**  /**  /**
+/**       //*******  //******/***   /**//********  /** //**//********  //** //****** //****** ******/**//******** ***  /**
+//         ///////    ////// ///    //  ////////   //   //  ////////    //   //////   ////// ////// //  //////// ///   // 
+"""
+print("To Know About Or How To Use This Program Write [about] Instead Of Filename")
+fileName = input("Enter the vocabulary file name : \n")
+if fileName == "about":
+    print("\nThis program will translate a vocabulary list into 2 languages")
+    print("give a file name, the file most be in txt format")
+    print("This program is made by\n" + POuria +"\n\n\n")
+    exit(0)
+fromLang = input("Source language : ")
+if fromLang == "" :
+    fromLang = "en"
+toLang1 = input("The first language : ")
+toLang2 = input("The second language : ")
+if fromLang == "" :
+    fromLang = ""
 
-writeFile(fileName, fromLang, toLang)
-
-
-
+writeFile(fileName, fromLang, toLang1, toLang2)
