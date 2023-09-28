@@ -5,6 +5,19 @@ from googletrans import Translator
 import time
 import math
 
+
+POuria = """
+ *******    *******                  **             **   **             **                           **
+/**////**  **/////**                //             /**  **             /**                          ///
+/**   /** **     //** **   ** ****** **  ******    /** **    ******   ******  ******  **   ** ****** **  ******   *******
+/******* /**      /**/**  /**//**//*/** //////**   /****    //////** ///**/  **////**/**  /**////** /** //////** //**///**
+/**////  /**      /**/**  /** /** / /**  *******   /**/**    *******   /**  /**   /**/**  /**   **  /**  *******  /**  /**
+/**      //**     ** /**  /** /**   /** **////**   /**//**  **////**   /**  /**   /**/**  /**  **   /** **////**  /**  /**
+/**       //*******  //******/***   /**//********  /** //**//********  //** //****** //****** ******/**//******** ***  /**
+//         ///////    ////// ///    //  ////////   //   //  ////////    //   //////   ////// ////// //  //////// ///   //
+"""
+
+
 # Define a dictionary of languages
 LANGUAGES = {
     'af': 'afrikaans', 'sq': 'albanian', 'am': 'amharic', 'ar': 'arabic', 'hy': 'armenian', 'az': 'azerbaijani', 'eu': 'basque',
@@ -55,8 +68,8 @@ def writeFile(fileName: str, fromLang: str, toLang1: str, toLang2: str) -> None:
 
         # Define widths for columns
         col1_width = max_english_length + 5
-        col2_width = 25  # Adjust the width 
-        col3_width = 25  # Adjust the width 
+        col2_width = 25  # Adjust the width
+        col3_width = 25  # Adjust the width
 
         # Write headers to the output file
         print(text[0].ljust(col1_width), text[1].ljust(col2_width), "(All these words are translated in", LANGUAGES[toLang1], ")".ljust(col3_width), file=opfw)
@@ -90,7 +103,9 @@ def writeFile(fileName: str, fromLang: str, toLang1: str, toLang2: str) -> None:
     print("The execution time is", minute, 'm  :', "{:.2f}".format(sec * 10), 's ')
 
 # Main program
-dic = """
+
+def main():
+    dic = """
                __             __
     ________  |__|       __  |__|
     \______ \  __  _____|  |_ __  ____   ____ _____ _______ __ __
@@ -102,32 +117,23 @@ dic = """
                                                              \_ /
 """
 
-print(dic)
+    print(dic)
+    print("To Know About Or How To Use This Program Write [about] Instead Of Filename")
+    fileName = input("Enter the vocabulary file name : \n")
+    if fileName == "about":
+        print("\nThis program will translate a vocabulary list into 2 languages")
+        print("give a file name, the file must be in txt format")
+        print("This program is made by\n" + POuria + "\n\n\n")
+        exit(0)
+    fromLang = input("Source language : ")
+    if fromLang == "":
+        fromLang = "en"
+    toLang1 = input("The first language : ")
+    toLang2 = input("The second language : ")
+    if fromLang == "":
+        fromLang = ""
 
+    writeFile(fileName, fromLang, toLang1, toLang2)
 
-POuria = """
- *******    *******                  **             **   **             **                           **                   
-/**////**  **/////**                //             /**  **             /**                          ///                    
-/**   /** **     //** **   ** ****** **  ******    /** **    ******   ******  ******  **   ** ****** **  ******   ******* 
-/******* /**      /**/**  /**//**//*/** //////**   /****    //////** ///**/  **////**/**  /**////** /** //////** //**///**
-/**////  /**      /**/**  /** /** / /**  *******   /**/**    *******   /**  /**   /**/**  /**   **  /**  *******  /**  /**
-/**      //**     ** /**  /** /**   /** **////**   /**//**  **////**   /**  /**   /**/**  /**  **   /** **////**  /**  /**
-/**       //*******  //******/***   /**//********  /** //**//********  //** //****** //****** ******/**//******** ***  /**
-//         ///////    ////// ///    //  ////////   //   //  ////////    //   //////   ////// ////// //  //////// ///   // 
-"""
-print("To Know About Or How To Use This Program Write [about] Instead Of Filename")
-fileName = input("Enter the vocabulary file name : \n")
-if fileName == "about":
-    print("\nThis program will translate a vocabulary list into 2 languages")
-    print("give a file name, the file most be in txt format")
-    print("This program is made by\n" + POuria +"\n\n\n")
-    exit(0)
-fromLang = input("Source language : ")
-if fromLang == "" :
-    fromLang = "en"
-toLang1 = input("The first language : ")
-toLang2 = input("The second language : ")
-if fromLang == "" :
-    fromLang = ""
-
-writeFile(fileName, fromLang, toLang1, toLang2)
+if __name__ == "__main__":
+    main()
