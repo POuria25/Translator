@@ -60,7 +60,12 @@ def writeFile(fileName: str, fromLang: str, toLang1: str, toLang2: str) -> None:
 
     try:
         # Open a file for writing translations
-        opfw = open(LANGUAGES[fromLang].capitalize() + " vocabularies translated to " + LANGUAGES[toLang1].capitalize() + ".txt", "w")
+        output_file_name = LANGUAGES[fromLang].capitalize() + " vocabularies translated to " + LANGUAGES[toLang1].capitalize()
+        if toLang2:
+            output_file_name += " and " + LANGUAGES[toLang2].capitalize()
+        output_file_name += ".txt"
+        opfw = open(output_file_name, "w", encoding="utf-8")
+
         text = readFile(fileName)
 
         # Calculate the maximum English word length
@@ -72,8 +77,10 @@ def writeFile(fileName: str, fromLang: str, toLang1: str, toLang2: str) -> None:
         col3_width = 25  # Adjust the width
 
         # Write headers to the output file
-        print(text[0].ljust(col1_width), text[1].ljust(col2_width), "(All these words are translated in", LANGUAGES[toLang1], ")".ljust(col3_width), file=opfw)
-        print("\n", file=opfw)
+        opfw.write(text[0].ljust(col1_width) + text[1].ljust(col2_width) + "(All these words are translated in " + LANGUAGES[toLang1].capitalize())
+        if toLang2:
+            opfw.write(" and " + LANGUAGES[toLang2].capitalize())
+        opfw.write(")\n\n")
 
         # Translate and write each word and its translation
         for i in range(2, len(text)):
@@ -83,14 +90,14 @@ def writeFile(fileName: str, fromLang: str, toLang1: str, toLang2: str) -> None:
             padding1 = " " * (max_english_length - len(english_word) + 20)  # Adjust padding
 
             # Check if toLang2 is not empty before assigning padding2
-            if toLang2 != "":
+            if toLang2:
                 translation2 = translator(words[0], fromLang, toLang2)
                 padding2 = " " * (len(translation1) + 5)  # Adjust padding
             else:
                 translation2 = ""  # Initialize translation2 as an empty string
                 padding2 = ""  # Initialize padding2 as an empty string
-            print(f"[{i-1}] .  {english_word} {padding1} {translation1} {padding2} {translation2} ",file=opfw)
-            print("\n", file=opfw)
+
+            opfw.write(f"[{i-1}] .  {english_word} {padding1} {translation1} {padding2} {translation2} \n\n")
 
     finally:
         if opfw:
