@@ -112,7 +112,7 @@ def main():
         print("❌ Invalid second target language.")
         return
 
-    print("🧠")
+    print("\n 🧠")
     writeFile(fileName, fromLang, toLang1, toLang2)
     print("\nTranslation completed successfully ✅!")
 
